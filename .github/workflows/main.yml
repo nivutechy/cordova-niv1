@@ -26,7 +26,7 @@ jobs:
           cordova create myApp
           cd myApp
           cordova platform add android
-          cp www/index.html
+          cp ${{ github.workspace }}/file.html www/index.html
           cordova build android --release
           mkdir -p ${{ github.workspace }}/apk
           cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
