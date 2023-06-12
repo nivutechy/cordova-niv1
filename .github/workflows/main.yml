@@ -1,4 +1,4 @@
-name: HTML to APK Conversion
+name: Build APK
 
 on:
   push:
@@ -8,12 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -21,22 +21,29 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Build AAB
+      - name: Build APK
         run: |
+          # Create a new Cordova project
           cordova create myApp
           cd myApp
+
+          # Add the Android platform
           cordova platform add android
+
+          # Copy the index.html file to the www directory
           cp ${{ github.workspace }}/index.html www/index.html
-          cordova build android --release -- --packageType=bundle
 
-          # Create the 'aab' directory if it doesn't exist
-          mkdir -p ${{ github.workspace }}/aab
+          # Build the Android project in release mode
+          cordova build android --release
 
-          # Move the generated AAB file to the 'aab' directory
-          mv platforms/android/app/build/outputs/bundle/release/app-release.aab ${{ github.workspace }}/aab/app-release.aab
+          # Create the 'apk' directory if it doesn't exist
+          mkdir -p ${{ github.workspace }}/apk
 
-      - name: Create AAB artifact
+          # Move the generated APK file to the 'apk' directory
+          mv platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v2
         with:
-          name: AAB
-          path: ${{ github.workspace }}/aab
+          name: myApp-APK
+          path: ${{ github.workspace }}/apk/app-release-unsigned.apk
