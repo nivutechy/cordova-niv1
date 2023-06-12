@@ -21,22 +21,22 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Build APK
+      - name: Build AAB
         run: |
           cordova create myApp
           cd myApp
           cordova platform add android
           cp ${{ github.workspace }}/index.html www/index.html
-          cordova build android --release
+          cordova build android --release -- --packageType=bundle
 
-          # Create the 'apk' directory if it doesn't exist
-          mkdir -p ${{ github.workspace }}/apk
+          # Create the 'aab' directory if it doesn't exist
+          mkdir -p ${{ github.workspace }}/aab
 
-          # Move the generated APK file to the 'apk' directory
-          mv platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
+          # Move the generated AAB file to the 'aab' directory
+          mv platforms/android/app/build/outputs/bundle/release/app-release.aab ${{ github.workspace }}/aab/app-release.aab
 
-      - name: Create APK artifact
+      - name: Create AAB artifact
         uses: actions/upload-artifact@v2
         with:
-          name: APK
-          path: ${{ github.workspace }}/apk
+          name: AAB
+          path: ${{ github.workspace }}/aab
