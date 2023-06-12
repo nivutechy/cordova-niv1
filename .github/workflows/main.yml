@@ -1,0 +1,38 @@
+name: HTML to APK Conversion
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Build APK
+        run: |
+          cordova create myApp
+          cd myApp
+          cordova platform add android
+          cp www/index.html
+          cordova build android --release
+          mkdir -p ${{ github.workspace }}/apk
+          cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
+
+      - name: Create APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: APK
+          path: ${{ github.workspace }}/apk
