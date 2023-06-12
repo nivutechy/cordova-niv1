@@ -28,7 +28,7 @@ jobs:
           cordova platform add android
           cp ${{ github.workspace }}/index.html www/index.html
           cordova build android --release
-          cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/myApp-release-unsigned.apk
+          cp platforms/android/app/build/outputs/apk/*.apk ${{ github.workspace }}/myApp-release-unsigned.apk
 
       - name: Create APK artifact
         uses: actions/upload-artifact@v2
