@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: 17
+          java-version: '14'
 
       - name: Download Bundletool
         run: |
@@ -49,11 +49,17 @@ jobs:
         run: |
           java -jar bundletool.jar build-apks --bundle=${{ github.workspace }}/aab/app-release.aab --output=${{ github.workspace }}/apks/app-release.apks --mode=universal
 
-      - name: Upload APK to Artifactory
-        uses: artifactory/upload-artifact@v2
+      - name: Extract APK from APK Set
+        run: |
+          unzip ${{ github.workspace }}/apks/app-release.apks -d ${{ github.workspace }}/apks
+
+      - name: Move APK to 'apk' directory
+        run: |
+          mkdir -p ${{ github.workspace }}/apk
+          mv ${{ github.workspace }}/apks/base.apk ${{ github.workspace }}/apk/app-release.apk
+
+      - name: Create APK artifact
+        uses: actions/upload-artifact@v2
         with:
-          server-url: https://my-artifactory.com
-          repository: my-repo
-          package: my-app
-          artifact: app-release.apk
-          type: apk
+          name: APK
+          path: ${{ github.workspace }}/apk
