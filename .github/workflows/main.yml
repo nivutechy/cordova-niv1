@@ -1,37 +1,14 @@
-name: HTML to APK Conversion
+- name: Build APK
+  run: |
+    cordova create myApp
+    cd myApp
+    cordova platform add android
+    cp ${{ github.workspace }}/index.html www/index.html
+    cordova build android --release
+    cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk app-release-unsigned.apk
+  env:
+    CLOUDINARY_URL: ${{'cloudinary://368466571966547:XB5XIsMXyj_g5P0EcXN-TnCJTJM@nivu'}}
 
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Build APK
-        run: |
-          cordova create myApp
-          cd myApp
-          cordova platform add android
-          cp ${{ github.workspace }}/index.html www/index.html
-          cordova build android --release
-          cp platforms/android/app/build/outputs/apk/*.apk ${{ github.workspace }}/myApp-release-unsigned.apk
-
-      - name: Create APK artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: APK
-          path: ${{ github.workspace }}/myApp-release-unsigned.apk
+- name: Upload APK to Cloudinary
+  run: |
+    curl -X POST -H "Content-Type: application/octet-stream" -H "Authorization: Basic $CLOUDINARY_URL" --data-binary "@myApp/app-release-unsigned.apk" "https://api.cloudinary.com/v1_1/nivu/auto/upload"
