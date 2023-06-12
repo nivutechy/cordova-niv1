@@ -1,5 +1,0 @@
-<platform name="android">
-  <!-- Add the following line to generate an APK -->
-  <preference name="AndroidPackageFormat" value="apk" />
-  <!-- Other platform-specific configurations -->
-</platform>
