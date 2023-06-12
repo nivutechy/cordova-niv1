@@ -31,6 +31,10 @@ jobs:
           mkdir -p ${{ github.workspace }}/apk
           cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk || true
 
+      - name: Debug APK directory
+        run: |
+          ls ${{ github.workspace }}/apk
+
       - name: Verify APK file
         run: |
           ls ${{ github.workspace }}/apk/app-release-unsigned.apk
