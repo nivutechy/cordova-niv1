@@ -43,8 +43,7 @@ jobs:
 
       - name: Download Bundletool
         run: |
-          wget -O bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all.jar
-
+          wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
       - name: Generate APK
         run: |
           java -jar bundletool.jar build-apks --bundle=${{ github.workspace }}/aab/app-release.aab --output=${{ github.workspace }}/apks/app-release.apks --mode=universal
