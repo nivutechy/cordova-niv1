@@ -6,9 +6,9 @@
     cp ${{ github.workspace }}/index.html www/index.html
     cordova build android --release
     cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk app-release-unsigned.apk
-  env:
-
 
 - name: Upload APK to Cloudinary
+  env:
+    CLOUDINARY_URL: cloudinary://368466571966547:XB5XIsMXyj_g5P0EcXN-TnCJTJM@nivu
   run: |
-    curl -X POST -H "Content-Type: application/octet-stream" -H "Authorization: Basic cloudinary://368466571966547:XB5XIsMXyj_g5P0EcXN-TnCJTJM@nivu" --data-binary "@myApp/app-release-unsigned.apk" "https://api.cloudinary.com/v1_1/nivu/auto/upload"
+    curl -X POST -H "Content-Type: application/octet-stream" -H "Authorization: Basic $CLOUDINARY_URL" --data-binary "@myApp/app-release-unsigned.apk" "https://api.cloudinary.com/v1_1/nivu/auto/upload"
