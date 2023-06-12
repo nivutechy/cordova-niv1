@@ -1,4 +1,4 @@
-name: HTML to APK Conversion
+name: HTML to APK 
 
 on:
   push:
