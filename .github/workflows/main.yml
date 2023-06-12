@@ -28,16 +28,12 @@ jobs:
           cordova platform add android
           cp ${{ github.workspace }}/index.html www/index.html
           cordova build android --release
+
+          # Create the 'apk' directory if it doesn't exist
           mkdir -p ${{ github.workspace }}/apk
-          cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk || true
 
-      - name: Debug APK directory
-        run: |
-          ls ${{ github.workspace }}/apk
-
-      - name: Verify APK file
-        run: |
-          ls ${{ github.workspace }}/apk/app-release-unsigned.apk
+          # Move the generated APK file to the 'apk' directory
+          mv platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
 
       - name: Create APK artifact
         uses: actions/upload-artifact@v2
