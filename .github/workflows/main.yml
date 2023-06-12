@@ -29,7 +29,11 @@ jobs:
           cp ${{ github.workspace }}/index.html www/index.html
           cordova build android --release
           mkdir -p ${{ github.workspace }}/apk
-          cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk
+          cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/apk/app-release-unsigned.apk || true
+
+      - name: Verify APK file
+        run: |
+          ls ${{ github.workspace }}/apk/app-release-unsigned.apk
 
       - name: Create APK artifact
         uses: actions/upload-artifact@v2
