@@ -1,0 +1,78 @@
+name: PhoneGap Build APK
+
+on:
+
+  push:
+
+    branches:
+
+      - main
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    
+
+    steps:
+
+      - name: Checkout repository
+
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+
+        uses: actions/setup-node@v2
+
+        with:
+
+          node-version: 14
+
+      - name: Install PhoneGap CLI
+
+        run: npm install -g phonegap@latest
+
+      - name: Build APK
+
+        run: |
+
+          phonegap create myApp
+
+          cd myApp
+
+          phonegap platform add android
+
+          cp ${{ github.workspace }}/index.html www/index.html
+
+          # Modify the config.xml file to set app name, package name, and other configurations
+
+          sed -i 's/<name>MyApp<\/name>/<name>YourAppName<\/name>/g' config.xml
+
+          sed -i 's/<widget id="io.cordova.myapp" version="1.0.0">/<widget id="com.yourcompany.yourapp" version="1.0.0">/g' config.xml
+
+          sed -i 's/<preference name="android-minSdkVersion" value="19" \/>/<preference name="android-minSdkVersion" value="21" \/>/g' config.xml
+
+          # Build the APK
+
+          phonegap build android
+
+      - name: Move APK to 'apk' directory
+
+        run: |
+
+          mkdir -p ${{ github.workspace }}/apk
+
+          mv ${{ github.workspace }}/myApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk ${{ github.workspace }}/apk/app-debug.apk
+
+      - name: Create APK artifact
+
+        uses: actions/upload-artifact@v2
+
+        with:
+
+          name: APK
+
+          path: ${{ github.workspace }}/apk
+
