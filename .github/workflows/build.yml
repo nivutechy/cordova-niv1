@@ -30,6 +30,9 @@ jobs:
       - name: Copy icon.png
         run: cp icon.png myApp/icon.png
 
+      - name: Update Gradle version
+        run: sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' myApp/gradle/wrapper/gradle-wrapper.properties
+
       - name: Add Android platform
         run: |
           cd myApp
