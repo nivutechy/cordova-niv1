@@ -22,17 +22,25 @@ jobs:
         run: mkdir myApp
 
       - name: Copy config.xml
-        run: cp ./config.xml ./myApp/config.xml
+        run: cp config.xml myApp/config.xml
 
       - name: Install Cordova
         run: npm install -g cordova
 
+      - name: Change directory to myApp
+        run: cd myApp
+
+      - name: Initialize Cordova project
+        run: cordova create . com.niced.firstapp KichuPottan
+
+      - name: Add Android platform
+        run: cordova platform add android
+
+      - name: Update Gradle version
+        run: sed -i 's/distributionUrl=.*/distributionUrl=https:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
+
       - name: Build Cordova project
-        run: |
-          cd myApp
-          cordova platform add android
-          sed -i 's/distributionUrl=.*/distributionUrl=https:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
-          cordova build android --release -- --packageType=bundle
+        run: cordova build android --release -- --packageType=bundle
 
       - name: Install JDK
         uses: actions/setup-java@v2
@@ -41,13 +49,10 @@ jobs:
           java-version: '14'
 
       - name: Download Bundletool
-        run: |
-          wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
+        run: wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
 
       - name: Generate AAB
-        run: |
-          java -jar bundletool.jar build-apks --bundle=myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+        run: java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
 
       - name: Extract APK from AAB
-        run: |
-          unzip -j app-release.apks 'universal.apk' -d ./myApp
+        run: unzip -j app-release.apks 'universal.apk' -d apk
