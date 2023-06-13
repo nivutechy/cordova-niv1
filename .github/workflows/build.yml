@@ -22,7 +22,9 @@ jobs:
         run: npm install -g cordova
 
       - name: Copy config.xml
-        run: cp ./config.xml ./myApp/config.xml
+        run: |
+          mkdir myApp
+          cp ./config.xml ./myApp/config.xml
 
       - name: Build Cordova project
         run: |
