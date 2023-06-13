@@ -22,10 +22,10 @@ jobs:
         run: npm install -g cordova
 
       - name: Copy config.xml
-        run: cp config.xml myApp/config.xml
+        run: cp ../config.xml myApp/config.xml
 
       - name: Copy app icon
-        run: cp icon.png myApp/icon.png
+        run: cp ../icon.png myApp/icon.png
 
       - name: Change directory to myApp
         run: cd myApp
