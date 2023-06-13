@@ -21,46 +21,21 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
+      - name: Create Cordova project
+        run: cordova create myApp com.niced.firstapp "Kichu Pottan"
+
       - name: Copy config.xml
-        run: |
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > config.xml
-          echo '<widget id="com.niced.firstapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">' >> config.xml
-          echo '  <name>Kichu Pottan</name>' >> config.xml
-          echo '  <description>Your app description</description>' >> config.xml
-          echo '  <author email="your-email@example.com" href="https://your-website.com">Your Name</author>' >> config.xml
-          echo '' >> config.xml
-          echo '  <!-- Android platform-specific configurations -->' >> config.xml
-          echo '  <platform name="android">' >> config.xml
-          echo '    <preference name="orientation" value="landscape" />' >> config.xml
-          echo '' >> config.xml
-          echo '    <!-- App Icon -->' >> config.xml
-          echo '    <icon src="icon.png"/>' >> config.xml
-          echo '' >> config.xml
-          echo '    <!-- App Preferences -->' >> config.xml
-          echo '    <preference name="android-targetSdkVersion" value="29" />' >> config.xml
-          echo '    <!-- Add more preferences as needed -->' >> config.xml
-          echo '' >> config.xml
-          echo '    <!-- Permissions -->' >> config.xml
-          echo '    <config-file parent="/*" target="AndroidManifest.xml">' >> config.xml
-          echo '      <uses-permission android:name="android.permission.CAMERA" />' >> config.xml
-          echo '      <!-- Add more permissions as needed -->' >> config.xml
-          echo '    </config-file>' >> config.xml
-          echo '  </platform>' >> config.xml
-          echo '  <content src="index.html" />' >> config.xml
-          echo '</widget>' >> config.xml
+        run: cp config.xml myApp/config.xml
 
-      - name: Create myApp directory
-        run: mkdir myApp
+      - name: Set working directory to myApp
+        shell: bash
+        run: cd myApp
 
-      - name: Copy icon.png
-        run: cp icon.png myApp/icon.png
+      - name: Add Android platform
+        run: cordova platform add android
 
       - name: Build Cordova project
-        run: |
-          cd myApp
-          cp ../config.xml .
-          cordova platform add android
-          cordova build android --release -- --packageType=bundle
+        run: cordova build android --release -- --packageType=bundle
 
       - name: Install JDK
         uses: actions/setup-java@v2
@@ -74,7 +49,7 @@ jobs:
 
       - name: Generate APK
         run: |
-          java -jar bundletool.jar build-apks --bundle=myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
 
       - name: Extract APK from APK Set
         run: |
