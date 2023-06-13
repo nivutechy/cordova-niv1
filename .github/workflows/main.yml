@@ -21,14 +21,24 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Build APK
+      - name: Build AAB
         run: |
           cd MyApp
           cordova platform add android
-          cordova build android --release
+          cordova build android --release -- -- --packageType=bundle
+
+      - name: Convert AAB to APK
+        run: |
+          cd MyApp/platforms/android/app/build/outputs/bundle/release/
+          bundletool build-apks --bundle=app-release.aab --output=app.apks --mode=universal
+
+      - name: Extract APK from AAB
+        run: |
+          cd MyApp/platforms/android/app/build/outputs/bundle/release/
+          unzip -o app.apks
 
       - name: Archive APK
         uses: actions/upload-artifact@v2
         with:
           name: MyApp-APK
-          path: MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+          path: MyApp/platforms/android/app/build/outputs/bundle/release/splits/*.apk
