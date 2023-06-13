@@ -21,20 +21,14 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Copy config.xml to project
-        run: cp ./config.xml ./myApp/
-
-      - name: Create Cordova project
-        run: |
-          cd myApp
-          cordova platform add android
-
-      - name: Update Gradle version
-        run: sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' ./myApp/platforms/android/gradle/wrapper/gradle-wrapper.properties
+      - name: Copy config.xml
+        run: cp ./config.xml ./myApp/config.xml
 
       - name: Build Cordova project
         run: |
           cd myApp
+          cordova platform add android
+          sed -i 's/distributionUrl=.*/distributionUrl=https:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
           cordova build android --release -- --packageType=bundle
 
       - name: Install JDK
@@ -49,8 +43,8 @@ jobs:
 
       - name: Generate APK
         run: |
-          java -jar bundletool.jar build-apks --bundle=./myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          java -jar bundletool.jar build-apks --bundle=myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
 
       - name: Extract APK from APK Set
         run: |
-          unzip -j app-release.apks 'universal.apk' -d app-release
+          unzip -j app-release.apks 'universal.apk' -d ./myApp
