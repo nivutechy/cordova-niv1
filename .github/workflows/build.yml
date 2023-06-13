@@ -21,35 +21,32 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Create Cordova project
-        run: cordova create myApp com.niced.firstapp KichuPottan
+      - name: Copy config.xml
+        run: cp config.xml myApp/config.xml
 
-      - name: Move to Cordova project directory
-        run: cd myApp
-
-      - name: Copy config.xml to project directory
-        run: cp ../config.xml .
-
-      - name: Add Android platform
-        run: cordova platform add android
-
-      - name: Update Gradle version
-        run: sed -i 's/distributionUrl=.*/distributionUrl=https:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
+      - name: Copy app icon
+        run: cp icon.png myApp/icon.png
 
       - name: Build Cordova project
-        run: cordova build android --release -- --packageType=bundle
+        run: |
+          cd myApp
+          cordova platform add android
+          cordova build android --release -- --packageType=bundle
 
-      - name: Install JDK
-        uses: actions/setup-java@v2
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
         with:
-          distribution: 'adopt'
-          java-version: '14'
+          name: android-artifacts
+          path: myApp/platforms/android/app/build/outputs
 
-      - name: Download Bundletool
-        run: wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: myApp/platforms/android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Generate AAB
-        run: java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
-
-      - name: Extract APK from AAB
-        run: unzip -j app-release.apks 'universal.apk' -d apk
+      - name: Upload AAB
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.aab
+          path: myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
