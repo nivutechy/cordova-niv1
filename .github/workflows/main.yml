@@ -1,0 +1,34 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Build APK
+        run: |
+          cd MyApp
+          cordova platform add android
+          cordova build android --release
+
+      - name: Archive APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: MyApp-APK
+          path: MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
