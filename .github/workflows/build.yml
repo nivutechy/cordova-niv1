@@ -34,7 +34,7 @@ jobs:
           echo '    <preference name="orientation" value="landscape" />' >> config.xml
           echo '' >> config.xml
           echo '    <!-- App Icon -->' >> config.xml
-          echo '    <icon src="res/icon.png" />' >> config.xml
+          echo '    <icon src="icon.png"/>' >> config.xml
           echo '' >> config.xml
           echo '    <!-- App Preferences -->' >> config.xml
           echo '    <preference name="android-targetSdkVersion" value="29" />' >> config.xml
