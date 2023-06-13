@@ -1,0 +1,42 @@
+name: Create APK from HTML
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android-sdk@v2
+
+      - name: Build APK
+        run: |
+          npm install -g androidjs-cli
+          androidjs create myApp
+          cd myApp
+          cp ${{ github.workspace }}/index.html app/index.html
+          # Build the APK
+          androidjs build android
+
+      - name: Move APK to 'apk' directory
+        run: |
+          mkdir -p ${{ github.workspace }}/apk
+          mv ${{ github.workspace }}/myApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk ${{ github.workspace }}/apk/app-debug.apk
+
+      - name: Create APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: APK
+          path: ${{ github.workspace }}/apk
