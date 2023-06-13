@@ -10,7 +10,7 @@
         <preference name="orientation" value="landscape" />
 
         <!-- App Icon -->
-        <icon src="res/icon.png" />
+        <icon src="icon.png" />
 
         
         <!-- App Preferences -->
