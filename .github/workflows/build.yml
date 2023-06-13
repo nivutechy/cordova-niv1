@@ -21,6 +21,15 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
+      - name: Create Cordova project
+        run: cordova create myApp com.niced.firstapp KichuPottan
+
+      - name: Move to Cordova project directory
+        run: cd myApp
+
+      - name: Copy config.xml to project directory
+        run: cp ../config.xml .
+
       - name: Add Android platform
         run: cordova platform add android
 
