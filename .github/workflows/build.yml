@@ -18,20 +18,8 @@ jobs:
         with:
           node-version: 16
 
-      - name: Create Cordova project directory
-        run: mkdir myApp
-
-      - name: Copy config.xml
-        run: cp config.xml myApp/config.xml
-
       - name: Install Cordova
         run: npm install -g cordova
-
-      - name: Change directory to myApp
-        run: cd myApp
-
-      - name: Initialize Cordova project
-        run: cordova create . com.niced.firstapp KichuPottan
 
       - name: Add Android platform
         run: cordova platform add android
