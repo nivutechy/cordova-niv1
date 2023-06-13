@@ -18,8 +18,19 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install Android SDK
-        uses: android-actions/setup-android-sdk@v2
+      - name: Download and unzip Android SDK
+        run: |
+          wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O android-sdk.zip
+          mkdir android-sdk
+          unzip -q android-sdk.zip -d android-sdk
+
+      - name: Accept Android licenses
+        run: yes | android-sdk/tools/bin/sdkmanager --licenses
+
+      - name: Set Android SDK environment variables
+        run: |
+          echo "export ANDROID_HOME=$(pwd)/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$PATH:$(pwd)/android-sdk/platform-tools:$(pwd)/android-sdk/tools:$(pwd)/android-sdk/tools/bin" >> $GITHUB_ENV
 
       - name: Build APK
         run: |
