@@ -27,6 +27,9 @@ jobs:
       - name: Copy config.xml
         run: cp config.xml myApp/config.xml
 
+      - name: Copy icon.png
+        run: cp icon.png myApp/icon.png
+
       - name: Add Android platform
         run: |
           cd myApp
