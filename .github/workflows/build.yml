@@ -27,11 +27,14 @@ jobs:
       - name: Copy app icon
         run: cp icon.png myApp/icon.png
 
+      - name: Change directory to myApp
+        run: cd myApp
+
+      - name: Add Cordova platform
+        run: cordova platform add android
+
       - name: Build Cordova project
-        run: |
-          cd myApp
-          cordova platform add android
-          cordova build android --release -- --packageType=bundle
+        run: cordova build android --release -- --packageType=bundle
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
