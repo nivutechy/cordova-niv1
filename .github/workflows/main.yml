@@ -21,6 +21,16 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
+      - name: Install OpenJDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Download bundletool
+        run: |
+          curl -O https://github.com/google/bundletool/releases/download/1.7.0/bundletool-all-1.7.0.jar
+          mv bundletool-all-1.7.0.jar bundletool.jar
+
       - name: Build AAB
         run: |
           cordova platform add android
@@ -29,7 +39,7 @@ jobs:
       - name: Convert AAB to APK
         run: |
           cd platforms/android/app/build/outputs/bundle/release/
-          bundletool build-apks --bundle=app-release.aab --output=app.apks --mode=universal
+          java -jar ../../../bundletool.jar build-apks --bundle=app-release.aab --output=app.apks --mode=universal
 
       - name: Extract APK from AAB
         run: |
