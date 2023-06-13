@@ -49,12 +49,14 @@ jobs:
           echo '  <content src="index.html" />' >> config.xml
           echo '</widget>' >> config.xml
 
+      - name: Create myApp directory
+        run: mkdir myApp
+
       - name: Copy icon.png
         run: cp icon.png myApp/icon.png
 
       - name: Build Cordova project
         run: |
-          cordova create myApp
           cd myApp
           cp ../config.xml .
           cordova platform add android
@@ -72,7 +74,7 @@ jobs:
 
       - name: Generate APK
         run: |
-          java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          java -jar bundletool.jar build-apks --bundle=myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
 
       - name: Extract APK from APK Set
         run: |
