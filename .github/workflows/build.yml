@@ -49,14 +49,22 @@ jobs:
           echo '  <content src="index.html" />' >> config.xml
           echo '</widget>' >> config.xml
 
-      - name: Build Cordova project
+      - name: Create Cordova project
         run: |
           cordova create myApp
           cd myApp
-          cp ../config.xml .
-          cordova platform add android
-          sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
-          cordova build android --release -- --packageType=bundle
+
+      - name: Copy config.xml to project
+        run: cp ../config.xml .
+
+      - name: Add Android platform
+        run: cordova platform add android
+
+      - name: Update Gradle version
+        run: sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-7.3.3-all.zip/' platforms/android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build Cordova project
+        run: cordova build android --release -- --packageType=bundle
 
       - name: Install JDK
         uses: actions/setup-java@v2
@@ -74,10 +82,4 @@ jobs:
 
       - name: Extract APK from APK Set
         run: |
-          unzip -j app-release.apks 'universal.apk' -d extracted
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v2
-        with:
-          name: app-release.apk
-          path: extracted/universal.apk
+          unzip -j app-release.apks 'universal.apk' -d output/
