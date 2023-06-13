@@ -38,10 +38,10 @@ jobs:
         run: |
           wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
 
-      - name: Generate APK
+      - name: Generate AAB
         run: |
           java -jar bundletool.jar build-apks --bundle=myApp/platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
 
-      - name: Extract APK from APK Set
+      - name: Extract APK from AAB
         run: |
           unzip -j app-release.apks 'universal.apk' -d ./myApp
