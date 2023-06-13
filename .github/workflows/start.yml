@@ -1,0 +1,78 @@
+name: HTML to APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Build AAB
+        run: |
+          cordova create myApp
+          cd myApp
+          cordova platform add android
+          cp ${{ github.workspace }}/index.html www/index.html
+          # Change app name in config.xml
+          sed -i 's/MyApp/YourAppName/g' config.xml
+          # Change package name in AndroidManifest.xml
+          sed -i 's/io.cordova.myapp/com.yourcompany.yourapp/g' platforms/android/app/src/main/AndroidManifest.xml
+          # Change target SDK in AndroidManifest.xml
+          sed -i 's/android:targetSdkVersion="30"/android:targetSdkVersion="29"/g' platforms/android/app/src/main/AndroidManifest.xml
+          # Copy custom icon files to the appropriate location
+          mkdir -p res/icon/android
+          cp ${{ github.workspace }}/icon.png res/icon/android/icon.png
+          cp ${{ github.workspace }}/icon.png res/icon/android/icon-ldpi.png
+          cp ${{ github.workspace }}/icon.png res/icon/android/icon-mdpi.png
+          cp ${{ github.workspace }}/icon.png res/icon/android/icon-hdpi.png
+          cp ${{ github.workspace }}/icon.png res/icon/android/icon-xhdpi.png
+          # Build the AAB file
+          cordova build android --release -- --packageType=bundle
+
+          # Create the 'aab' directory if it doesn't exist
+          mkdir -p ${{ github.workspace }}/aab
+
+          # Move the generated AAB file to the 'aab' directory
+          mv platforms/android/app/build/outputs/bundle/release/app-release.aab ${{ github.workspace }}/aab/app-release.aab
+
+      - name: Install JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '14'
+
+      - name: Download Bundletool
+        run: |
+          wget -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.1/bundletool-all-1.15.1.jar
+
+      - name: Generate APK
+        run: |
+          java -jar bundletool.jar build-apks --bundle=${{ github.workspace }}/aab/app-release.aab --output=${{ github.workspace }}/apks/app-release.apks --mode=universal
+
+      - name: Extract APK from APK Set
+        run: |
+          unzip -j ${{ github.workspace }}/apks/app-release.apks 'universal.apk' -d ${{ github.workspace }}/apk
+
+      - name: Move APK to 'apk' directory
+        run: |
+          mv ${{ github.workspace }}/apk/universal.apk ${{ github.workspace }}/apk/app-release.apk
+
+      - name: Create APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: APK
+          path: ${{ github.workspace }}/apk
