@@ -49,6 +49,9 @@ jobs:
           echo '  <content src="index.html" />' >> config.xml
           echo '</widget>' >> config.xml
 
+      - name: Copy icon.png
+        run: cp icon.png myApp/icon.png
+
       - name: Build Cordova project
         run: |
           cordova create myApp
@@ -73,4 +76,14 @@ jobs:
 
       - name: Extract APK from APK Set
         run: |
-          unzip -j app-release.apks 'universal.apk' -
+          unzip -j app-release.apks 'universal.apk' -d apk
+
+      - name: Move APK to 'apk' directory
+        run: |
+          mv apk/universal.apk apk/app-release.apk
+
+      - name: Create APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: APK
+          path: apk/app-release.apk
